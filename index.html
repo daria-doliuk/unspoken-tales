@@ -827,6 +827,8 @@
                 const submitButtons = document.querySelectorAll('#submitBtn');
                 submitButtons.forEach(btn => {
                     btn.disabled = true;
+                    btn.style.pointerEvents = 'none'; // Prevent click events
+                    btn.style.touchEvents = 'none'; // Prevent click events
                     // Optional: Change button text to show loading state
                     btn.innerHTML = isGerman ? 'Wird gesendet...' : 'Submitting...';
                 });
