@@ -808,12 +808,6 @@
             document.querySelectorAll('#submitBtn').forEach(btn => {
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
-                    // Disable all submit buttons to prevent double submission
-                    document.querySelectorAll('#submitBtn').forEach(submitBtn => {
-                        submitBtn.disabled = true;
-                        submitBtn.style.opacity = '0.5';
-                        submitBtn.style.cursor = 'not-allowed';
-                    });
                     form.dispatchEvent(new Event('submit'));
                 });
             });
@@ -829,9 +823,9 @@
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
-                // Disable the form to prevent double submission
-                const allFormInputs = form.querySelectorAll('input, textarea, button, select');
-                allFormInputs.forEach(input => input.disabled = true);
+                // Disable all submit buttons to prevent multiple submissions
+                const submitButtons = document.querySelectorAll('#submitBtn');
+                submitButtons.forEach(btn => btn.disabled = true);
                 
                 // Validate email if follow-up is checked
                 if (followUpCheckbox.checked) {
@@ -841,38 +835,33 @@
                             'Bitte geben Sie eine gültige E-Mail-Adresse ein.' : 
                             'Please enter a valid email address.';
                         highlightError(document.getElementById('emailGroup'), msg);
-                        // Re-enable form on validation error
-                        allFormInputs.forEach(input => input.disabled = false);
-                        document.querySelectorAll('#submitBtn').forEach(btn => {
-                            btn.disabled = false;
-                            btn.style.opacity = '1';
-                            btn.style.cursor = 'pointer';
-                        });
+                        // Re-enable submit buttons if validation fails
+                        submitButtons.forEach(btn => btn.disabled = false);
                         return;
                     }
                 }
 
-                try {
-                    // Collect form data and transform to required format
-                    const formData = new FormData(form);
-                    const jsonData = [];
-                    
-                    // Add telegram channel ID
-                    jsonData.push({
-                        "key": "formto_telegram",
-                        "value": "367622306"
-                    });
+                // Collect form data and transform to required format
+                const formData = new FormData(form);
+                const jsonData = [];
+                
+                // Add telegram channel ID
+                jsonData.push({
+                    "key": "formto_telegram",
+                    "value": "367622306"
+                });
 
-                    // Convert FormData to required JSON format
-                    for (let [key, value] of formData.entries()) {
-                        if (value) { // Only include non-empty values
-                            jsonData.push({
-                                "key": key,
-                                "value": value
-                            });
-                        }
+                // Convert FormData to required JSON format
+                for (let [key, value] of formData.entries()) {
+                    if (value) { // Only include non-empty values
+                        jsonData.push({
+                            "key": key,
+                            "value": value
+                        });
                     }
+                }
 
+                try {
                     const response = await fetch('https://templinx6.api.linx.twenty57.net/Form2Channel', {
                         method: 'POST',
                         headers: {
@@ -884,20 +873,13 @@
                     const result = await response.json();
 
                     if (result.Success) {
-                        showSection(4);
+                        showSection(4); // Show thank you section
                         form.reset();
                     } else {
                         const errorMsg = isGerman ? 
                             'Fehler: ' + result.Message : 
                             'Error: ' + result.Message;
                         alert(errorMsg);
-                        // Re-enable form on error
-                        allFormInputs.forEach(input => input.disabled = false);
-                        document.querySelectorAll('#submitBtn').forEach(btn => {
-                            btn.disabled = false;
-                            btn.style.opacity = '1';
-                            btn.style.cursor = 'pointer';
-                        });
                     }
                 } catch (error) {
                     console.error('Error:', error);
@@ -905,13 +887,9 @@
                         'Beim Senden des Formulars ist ein Fehler aufgetreten.' : 
                         'An error occurred while submitting the form.';
                     alert(errorMsg);
-                    // Re-enable form on error
-                    allFormInputs.forEach(input => input.disabled = false);
-                    document.querySelectorAll('#submitBtn').forEach(btn => {
-                        btn.disabled = false;
-                        btn.style.opacity = '1';
-                        btn.style.cursor = 'pointer';
-                    });
+                } finally {
+                    // Re-enable submit buttons after response or error
+                    submitButtons.forEach(btn => btn.disabled = false);
                 }
             });
             
