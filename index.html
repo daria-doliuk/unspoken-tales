@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <base href="/unspoken-tales/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unspoken Tales - Concert Feedback</title>
@@ -389,11 +390,9 @@
         </div>
         
         <!-- Replace the existing form tag and add required hidden fields -->
-        <form action="https://form2channel.com/" method="POST" id="concertForm">
+        <form action="https://form2channel.com/" method="POST" id="concertForm" >
             <!-- Add hidden fields for configuration -->
             <input type="hidden" name="formto_telegram" value="367622306">
-            <input type="hidden" name="formto_redirect" value="https://daria-doliuk.github.io/unspoken-tales/#success">
-            <input type="hidden" name="formto_error" value="https://daria-doliuk.github.io/unspoken-tales/#fail">
             <!-- Demographics Section -->
             <div class="form-card" id="section1">
                 <div class="form-section">
@@ -824,7 +823,7 @@
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
-                if (followUpCheckbox.checked) {
+                                if (followUpCheckbox.checked) {
                     const email = document.querySelector(`#email[data-lang="${isGerman ? 'de' : 'en'}"]`).value;
                     if (!email || !email.includes('@')) {
                         const msg = isGerman ? 
@@ -835,22 +834,8 @@
                     }
                 }
 
-                try {
-                    const formData = new FormData(form);
-                    const response = await fetch(form.action, {
-                        method: 'POST',
-                        body: formData
-                    });
-
-                    if (response.ok) {
-                        window.location.href = 'https://daria-doliuk.github.io/unspoken-tales/#success';
-                    } else {
-                        window.location.href = 'https://daria-doliuk.github.io/unspoken-tales/#fail';
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    window.location.href = 'https://daria-doliuk.github.io/unspoken-tales/#fail';
-                }
+                // Submit the form directly without fetch
+                form.submit();
             });
             
             shareBtn.addEventListener('click', function() {
@@ -885,28 +870,6 @@
             document.querySelectorAll('.emotion-range').forEach(range => {
                 range.value = 0;
             });
-        });
-        
-        // Check for URL hash on page load
-        window.addEventListener('load', function() {
-            const hash = window.location.hash;
-            
-            if (hash === '#success') {
-                // Show thank you section
-                showSection(4);
-            } else if (hash === '#fail') {
-                const errorMsg = document.body.classList.contains('de') 
-                    ? 'Entschuldigung, beim Senden des Formulars ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.'
-                    : 'Sorry, there was an error submitting the form. Please try again.';
-                alert(errorMsg);
-                // Stay on current section
-                showSection(currentSection);
-            }
-            
-            // Clear the hash to prevent showing the message again on refresh
-            if (hash === '#success' || hash === '#fail') {
-                history.pushState('', document.title, window.location.pathname);
-            }
         });
     </script>
 </body>
