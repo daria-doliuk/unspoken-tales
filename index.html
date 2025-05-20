@@ -392,8 +392,8 @@
         <form action="https://form2channel.com/" method="POST" id="concertForm" >
             <!-- Add hidden fields for configuration -->
             <input type="hidden" name="formto_telegram" value="367622306">
-            <input type="hidden" name="formto_redirect" value="false">
-            <input type="hidden" name="formto_error" value="false">
+            <input name="formto_redirect" type="hidden" value="./#success">
+            <input name="formto_error" type="hidden" value="./#fail">
             <!-- Demographics Section -->
             <div class="form-card" id="section1">
                 <div class="form-section">
@@ -871,6 +871,28 @@
             document.querySelectorAll('.emotion-range').forEach(range => {
                 range.value = 0;
             });
+        });
+        
+        // Check for URL hash on page load
+        window.addEventListener('load', function() {
+            const hash = window.location.hash;
+            
+            if (hash === '#success') {
+                // Show thank you section
+                showSection(4);
+            } else if (hash === '#fail') {
+                const errorMsg = document.body.classList.contains('de') 
+                    ? 'Entschuldigung, beim Senden des Formulars ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.'
+                    : 'Sorry, there was an error submitting the form. Please try again.';
+                alert(errorMsg);
+                // Stay on current section
+                showSection(currentSection);
+            }
+            
+            // Clear the hash to prevent showing the message again on refresh
+            if (hash === '#success' || hash === '#fail') {
+                history.pushState('', document.title, window.location.pathname);
+            }
         });
     </script>
 </body>
