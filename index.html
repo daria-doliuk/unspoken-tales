@@ -66,8 +66,6 @@
             margin-bottom: 2rem;
             transition: transform 0.2s ease;
             border: 1px solid var(--border-color);
-            opacity: 1;
-            transition: opacity 0.3s ease;
         }
         
         .form-section h2 {
@@ -193,6 +191,12 @@
             transform: translateY(0);
         }
         
+        .btn[disabled] {
+            opacity: 0.7;
+            cursor: not-allowed;
+            background-color: var(--primary-light);
+        }
+        
         .emoji {
             font-size: 1.5rem;
             margin-right: 0.5rem;
@@ -224,15 +228,12 @@
         }
         
         .hidden {
-            opacity: 0;
             display: none;
         }
         
         .thank-you {
             text-align: center;
             padding: 3rem 1rem;
-            opacity: 1;
-            transition: opacity 0.3s ease;
         }
         
         .thank-you h2 {
@@ -397,7 +398,8 @@
         <form action="https://form2channel.com/" method="POST" id="concertForm" >
             <!-- Add hidden fields for configuration -->
             <input type="hidden" name="formto_telegram" value="367622306">
-
+            <input type="hidden" name="formto_redirect" value="false">
+            <input type="hidden" name="formto_error" value="false">
             <!-- Demographics Section -->
             <div class="form-card" id="section1">
                 <div class="form-section">
@@ -840,34 +842,44 @@
                 }
 
                 try {
+                    // Show loading state
+                    document.querySelectorAll('#submitBtn').forEach(btn => {
+                        btn.disabled = true;
+                        btn.innerHTML = isGerman ? 'Wird gesendet...' : 'Sending...';
+                    });
+
                     const formData = new FormData(form);
+                    
+                    // Submit the form using fetch
                     const response = await fetch(form.action, {
                         method: 'POST',
                         body: formData
                     });
-                    
-                    const result = await response.json();
-                    
-                    if (result.Success) {
-                        // Hide form and show thank you section
-                        form.classList.add('hidden');
-                        thankYouSection.classList.remove('hidden');
-                        currentSection = 4;
-                        updateProgress();
+
+                    if (response.ok) {
+                        // Show success message
+                        showSection(4);
+                        
+                        // Optional: Reset form if needed
+                        // form.reset();
                     } else {
-                        // Show error message
-                        const msg = isGerman ? 
-                            'Es gab einen Fehler beim Senden des Formulars. Bitte versuchen Sie es erneut.' : 
-                            'There was an error submitting the form. Please try again.';
-                        alert(msg);
+                        throw new Error('Network response was not ok');
                     }
                 } catch (error) {
+                    console.error('Error submitting form:', error);
+                    
                     // Show error message
-                    const msg = isGerman ? 
-                        'Es gab einen Fehler beim Senden des Formulars. Bitte versuchen Sie es erneut.' : 
-                        'There was an error submitting the form. Please try again.';
-                    alert(msg);
-                    console.error('Error:', error);
+                    const errorMessage = isGerman ? 
+                        'Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.' : 
+                        'An error occurred. Please try again later.';
+                    
+                    alert(errorMessage);
+                    
+                    // Reset submit button
+                    document.querySelectorAll('#submitBtn').forEach(btn => {
+                        btn.disabled = false;
+                        btn.innerHTML = isGerman ? 'Absenden' : 'Submit';
+                    });
                 }
             });
             
