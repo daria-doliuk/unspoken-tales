@@ -820,9 +820,9 @@
                 }
             });
             
-            form.addEventListener('submit', async function(e) {
+            form.addEventListener('submit', function(e) {
                 e.preventDefault();
-    
+                
                 if (followUpCheckbox.checked) {
                     const email = document.querySelector(`#email[data-lang="${isGerman ? 'de' : 'en'}"]`).value;
                     if (!email || !email.includes('@')) {
@@ -833,31 +833,39 @@
                         return;
                     }
                 }
-    
-                try {
-                    const formData = new FormData(form);
-                    const response = await fetch('https://form2channel.com/', {
-                        method: 'POST',
-                        body: formData
-                    });
-    
-                    const result = await response.json();
-    
-                    if (result.Success) {
-                        showSection(4); // Show thank you section
-                        form.reset();
-                    } else {
-                        const errorMsg = isGerman ? 
-                            'Ein Fehler ist aufgetreten: ' + result.Message : 
-                            'An error occurred: ' + result.Message;
-                        alert(errorMsg);
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
+
+                // Add hidden redirect fields
+                const redirectInput = document.createElement('input');
+                redirectInput.type = 'hidden';
+                redirectInput.name = 'formto_redirect';
+                redirectInput.value = 'https://daria-doliuk.github.io/unspoken-tales/#success';
+                form.appendChild(redirectInput);
+
+                const errorInput = document.createElement('input');
+                errorInput.type = 'hidden';
+                errorInput.name = 'formto_error';
+                errorInput.value = 'https://daria-doliuk.github.io/unspoken-tales/#error';
+                form.appendChild(errorInput);
+
+                // Submit the form traditionally
+                form.submit();
+            });
+            
+            // Add this code to handle the redirect after form submission
+            window.addEventListener('load', function() {
+                const hash = window.location.hash;
+                
+                if (hash === '#success') {
+                    showSection(4); // Show thank you section
+                    // Clean up the URL
+                    history.replaceState(null, '', window.location.pathname);
+                } else if (hash === '#error') {
                     const errorMsg = isGerman ? 
                         'Beim Senden des Formulars ist ein Fehler aufgetreten.' : 
                         'An error occurred while submitting the form.';
                     alert(errorMsg);
+                    // Clean up the URL
+                    history.replaceState(null, '', window.location.pathname);
                 }
             });
             
