@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unspoken Tales - Concert Feedback</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #333333;
+            --primary-light: #666666;
+            --primary-dark: #000000;
+            --secondary-color: #888888;
+            --text-color: #1f1f1f;
+            --light-gray: #f0f0f0;
+            --border-color: #d1d1d1;
+            --success-color: #333333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: ui-sans-serif, -apple-system, system-ui, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+        }
+        
+        body {
+            background-color: #ffffff;
+            color: var(--text-color);
+            line-height: 1.6;
+            font-size: 18px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 1rem 2rem;
+        }
+        
+        .cover-image {
+            width: 100%;
+            height: 40vh;
+            min-height: 300px;
+            max-height: 500px;
+            object-fit: cover;
+            margin-bottom: 2rem;
+        }
+        
+        .intro-text {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 0 1rem;
+        }
+        
+        .intro-text p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+        
+        .form-card {
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.2s ease;
+            border: 1px solid var(--border-color);
+        }
+        
+        .form-section h2 {
+            color: var(--primary-dark);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            border-bottom: 1px solid var(--primary-dark);
+            padding-bottom: 0.5rem;
+            display: inline-block;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+        
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .emotion-item {
+            background-color: var(--light-gray);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .emotion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .emotion-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .intensity-labels {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 0.25rem;
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+        
+        .intensity-slider {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 0.5rem;
+            background-color: #e5e7eb;
+            border-radius: 0.25rem;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .emoji {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #eee;
+            height: 8px;
+            margin: 20px 0;
+            border-radius: 4px;
+            overflow: hidden;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 100%;
+            background-color: #eee;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            width: 0;
+            background-color: #2c3637fd;
+            transition: width 0.2s ease-in-out;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .thank-you {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+        
+        .thank-you h2 {
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+        
+        .thank-you p {
+            color: var(--text-color);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .btn-share {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid var(--primary-dark);
+            background-color: white;
+            color: var(--primary-dark);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-share:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .shake {
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            position: sticky;
+            bottom: 1rem;
+            background: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            margin-top: 1rem;
+        }
+        
+        .navigation-buttons .btn {
+            flex: 1;
+            text-align: center;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .cover-image {
+                height: 35vh;
+                min-height: 250px;
+                margin-bottom: 1.5rem;
+            }
+            
+            .intro-text {
+                margin-bottom: 1.5rem;
+            }
+            
+            .form-card {
+                padding: 1.5rem;
+            }
+            
+            .navigation-buttons {
+                position: fixed;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                border-radius: 0;
+                padding: 0.75rem 1rem;
+                box-shadow: 0 -2px 15px rgba(0,0,0,0.1);
+            }
+            
+            .container {
+                padding-bottom: 5rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .cover-image {
+                height: 30vh;
+                min-height: 200px;
+            }
+            
+            .intro-text p {
+                font-size: 1rem;
+            }
+            
+            .form-section h2 {
+                font-size: 1.3rem;
+            }
+            
+            .emotion-name {
+                font-size: 1rem;
+            }
+        }
+        
+        /* Language-specific styles */
+        [data-lang] { display: none; }
+
+        body.de [data-lang="de"],
+        body.en [data-lang="en"] { 
+            display: block; 
+        }
+
+        h2[data-lang] {
+            display: none;
+        }
+
+        body.de h2[data-lang="de"],
+        body.en h2[data-lang="en"] {
+            display: block;
+        }
+        
+        /* Hide duplicate form controls */
+        .form-control[data-lang],
+        textarea[data-lang] {
+            display: none;
+        }
+        
+        body.de .form-control[data-lang="de"],
+        body.en .form-control[data-lang="en"],
+        body.de textarea[data-lang="de"],
+        body.en textarea[data-lang="en"] {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <img src="unspoken.png" alt="Concert performance" class="cover-image">
+    
+    <div class="container">
+        <div class="intro-text">
+            <p data-lang="de">Danke, dass Sie dabei waren! Wir würden gerne wissen, was Sie während der Aufführung empfunden haben. Dieses kurze Formular dauert nur 2-3 Minuten, und Ihre Antworten bedeuten uns sehr viel.</p>
+            <p data-lang="en">Thank you for joining us! We'd love to know what you felt during the performance. This short form takes just 2–3 minutes, and your responses mean a lot to us.</p>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+        </div>
+        
+        <form id="concertForm">
+            <!-- Demographics Section -->
+            <div class="form-card" id="section1">
+                <div class="form-section">
+                    <h2 data-lang="de">Über Sie</h2>
+                    <h2 data-lang="en">About You</h2>
+                    <div class="form-group">
+                        <label data-lang="de">Sind Sie:</label>
+                        <label data-lang="en">Are you a:</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="musician" name="musicianStatus" value="Musician" required>
+                                <label for="musician" data-lang="de">Musiker(in)</label>
+                                <label for="musician" data-lang="en">Musician</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="nonMusician" name="musicianStatus" value="Non-musician">
+                                <label for="nonMusician" data-lang="de">Nicht-Musiker(in)</label>
+                                <label for="nonMusician" data-lang="en">Non-musician</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label data-lang="de">Sie sind hier als:</label>
+                        <label data-lang="en">You are here as a:</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="student" name="role" value="Student" required>
+                                <label for="student" data-lang="de">Student(in)</label>
+                                <label for="student" data-lang="en">Student</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="professor" name="role" value="Professor">
+                                <label for="professor" data-lang="de">Professor(in)</label>
+                                <label for="professor" data-lang="en">Professor</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="visitor" name="role" value="Visitor">
+                                <label for="visitor" data-lang="de">Besucher(in)</label>
+                                <label for="visitor" data-lang="en">Visitor</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="family" name="role" value="Parent/Family">
+                                <label for="family" data-lang="de">Elternteil/Familie</label>
+                                <label for="family" data-lang="en">Parent/Family</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="other" name="role" value="Other">
+                                <label for="other" data-lang="de">Andere</label>
+                                <label for="other" data-lang="en">Other</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label data-lang="de">Altersgruppe (optional):</label>
+                        <label data-lang="en">Age group (optional):</label>
+                        <select class="form-control" id="ageGroup" name="ageGroup">
+                            <option value="" data-lang="de">Keine Angabe</option>
+                            <option value="" data-lang="en">Prefer not to say</option>
+                            <option value="Under 18" data-lang="de">Unter 18</option>
+                            <option value="Under 18" data-lang="en">Under 18</option>
+                            <option value="18-25">18-25</option>
+                            <option value="26-40">26-40</option>
+                            <option value="41-60">41-60</option>
+                            <option value="60+">60+</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="navigation-buttons">
+                    <button type="button" class="btn" id="nextBtn1" data-lang="de">Weiter →</button>
+                    <button type="button" class="btn" id="nextBtn1" data-lang="en">Next →</button>
+                </div>
+            </div>
+            
+            <!-- Emotional Experience Section -->
+            <div class="form-card hidden" id="section2">
+                <div class="form-section">
+                    <h2 data-lang="de">Emotionales Erlebnis</h2>
+                    <h2 data-lang="en">Emotional Experience</h2>
+                    
+                    <div class="emotion-item">
+                        <div class="emotion-header">
+                            <span class="emotion-name"><span class="emoji">😊</span><span data-lang="de">Freude</span><span data-lang="en">Joy</span></span>
+                        </div>
+                        <div class="intensity-slider">
+                            <input type="range" id="joy" name="joy" min="0" max="3" value="0" class="emotion-range">
+                            <div class="intensity-labels">
+                                <span data-lang="de">Keine</span><span data-lang="en">None</span>
+                                <span data-lang="de">Gering</span><span data-lang="en">Low</span>
+                                <span data-lang="de">Mittel</span><span data-lang="en">Medium</span>
+                                <span data-lang="de">Stark</span><span data-lang="en">Strong</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="emotion-item">
+                        <div class="emotion-header">
+                            <span class="emotion-name"><span class="emoji">😢</span><span data-lang="de">Trauer</span><span data-lang="en">Sadness</span></span>
+                        </div>
+                        <div class="intensity-slider">
+                            <input type="range" id="sadness" name="sadness" min="0" max="3" value="0" class="emotion-range">
+                            <div class="intensity-labels">
+                                <span data-lang="de">Keine</span><span data-lang="en">None</span>
+                                <span data-lang="de">Gering</span><span data-lang="en">Low</span>
+                                <span data-lang="de">Mittel</span><span data-lang="en">Medium</span>
+                                <span data-lang="de">Stark</span><span data-lang="en">Strong</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="emotion-item">
+                        <div class="emotion-header">
+                            <span class="emotion-name"><span class="emoji">😃</span><span data-lang="de">Aufregung</span><span data-lang="en">Excitement</span></span>
+                        </div>
+                        <div class="intensity-slider">
+                            <input type="range" id="excitement" name="excitement" min="0" max="3" value="0" class="emotion-range">
+                            <div class="intensity-labels">
+                                <span data-lang="de">Keine</span><span data-lang="en">None</span>
+                                <span data-lang="de">Gering</span><span data-lang="en">Low</span>
+                                <span data-lang="de">Mittel</span><span data-lang="en">Medium</span>
+                                <span data-lang="de">Stark</span><span data-lang="en">Strong</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="emotion-item">
+                        <div class="emotion-header">
+                            <span class="emotion-name"><span class="emoji">😌</span><span data-lang="de">Ruhe</span><span data-lang="en">Calm</span></span>
+                        </div>
+                        <div class="intensity-slider">
+                            <input type="range" id="calm" name="calm" min="0" max="3" value="0" class="emotion-range">
+                            <div class="intensity-labels">
+                                <span data-lang="de">Keine</span><span data-lang="en">None</span>
+                                <span data-lang="de">Gering</span><span data-lang="en">Low</span>
+                                <span data-lang="de">Mittel</span><span data-lang="en">Medium</span>
+                                <span data-lang="de">Stark</span><span data-lang="en">Strong</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="emotion-item">
+                        <div class="emotion-header">
+                            <span class="emotion-name"><span class="emoji">🌟</span><span data-lang="de">Sehnsucht</span><span data-lang="en">Longing</span></span>
+                        </div>
+                        <div class="intensity-slider">
+                            <input type="range" id="longing" name="longing" min="0" max="3" value="0" class="emotion-range">
+                            <div class="intensity-labels">
+                                <span data-lang="de">Keine</span><span data-lang="en">None</span>
+                                <span data-lang="de">Gering</span><span data-lang="en">Low</span>
+                                <span data-lang="de">Mittel</span><span data-lang="en">Medium</span>
+                                <span data-lang="de">Stark</span><span data-lang="en">Strong</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="emotion-item">
+                        <div class="emotion-header">
+                            <span class="emotion-name"><span class="emoji">😬</span><span data-lang="de">Spannung</span><span data-lang="en">Tension</span></span>
+                        </div>
+                        <div class="intensity-slider">
+                            <input type="range" id="tension" name="tension" min="0" max="3" value="0" class="emotion-range">
+                            <div class="intensity-labels">
+                                <span data-lang="de">Keine</span><span data-lang="en">None</span>
+                                <span data-lang="de">Gering</span><span data-lang="en">Low</span>
+                                <span data-lang="de">Mittel</span><span data-lang="en">Medium</span>
+                                <span data-lang="de">Stark</span><span data-lang="en">Strong</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="emotion-item">
+                        <div class="emotion-header">
+                            <span class="emotion-name"><span class="emoji">😲</span><span data-lang="de">Überraschung</span><span data-lang="en">Surprise</span></span>
+                        </div>
+                        <div class="intensity-slider">
+                            <input type="range" id="surprise" name="surprise" min="0" max="3" value="0" class="emotion-range">
+                            <div class="intensity-labels">
+                                <span data-lang="de">Keine</span><span data-lang="en">None</span>
+                                <span data-lang="de">Gering</span><span data-lang="en">Low</span>
+                                <span data-lang="de">Mittel</span><span data-lang="en">Medium</span>
+                                <span data-lang="de">Stark</span><span data-lang="en">Strong</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="emotion-item">
+                        <div class="emotion-header">
+                            <span class="emotion-name"><span class="emoji">🏆</span><span data-lang="de">Stolz</span><span data-lang="en">Pride</span></span>
+                        </div>
+                        <div class="intensity-slider">
+                            <input type="range" id="pride" name="pride" min="0" max="3" value="0" class="emotion-range">
+                            <div class="intensity-labels">
+                                <span data-lang="de">Keine</span><span data-lang="en">None</span>
+                                <span data-lang="de">Gering</span><span data-lang="en">Low</span>
+                                <span data-lang="de">Mittel</span><span data-lang="en">Medium</span>
+                                <span data-lang="de">Stark</span><span data-lang="en">Strong</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="emotion-item">
+                        <div class="emotion-header">
+                            <span class="emotion-name"><span class="emoji">✨</span><span data-lang="de">Andere Emotion</span><span data-lang="en">Other Emotion</span></span>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="otherEmotion" name="otherEmotion" data-lang="de" placeholder="Geben Sie eine andere Emotion ein">
+                            <input type="text" class="form-control" id="otherEmotion" name="otherEmotion" data-lang="en" placeholder="Enter another emotion">
+                        </div>
+                        <div class="intensity-slider">
+                            <input type="range" id="otherIntensity" name="otherIntensity" min="0" max="3" value="0" class="emotion-range">
+                            <div class="intensity-labels">
+                                <span data-lang="de">Keine</span><span data-lang="en">None</span>
+                                <span data-lang="de">Gering</span><span data-lang="en">Low</span>
+                                <span data-lang="de">Mittel</span><span data-lang="en">Medium</span>
+                                <span data-lang="de">Stark</span><span data-lang="en">Strong</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="navigation-buttons">
+                    <button type="button" class="btn" id="prevBtn2" data-lang="de">← Zurück</button>
+                    <button type="button" class="btn" id="prevBtn2" data-lang="en">← Back</button>
+                    <button type="button" class="btn" id="nextBtn2" data-lang="de">Weiter →</button>
+                    <button type="button" class="btn" id="nextBtn2" data-lang="en">Next →</button>
+                </div>
+            </div>
+            
+            <!-- Reflection Section -->
+            <div class="form-card hidden" id="section3">
+                <div class="form-section">
+                    <h2 data-lang="de">Reflexion</h2>
+                    <h2 data-lang="en">Reflection</h2>
+                    
+                    <div class="form-group">
+                        <label data-lang="de">Wenn Sie Ihr Erlebnis in einem Wort beschreiben könnten, welches wäre es?</label>
+                        <label data-lang="en">If you could describe your experience in one word, what would it be?</label>
+                        <input type="text" class="form-control" id="oneWord" name="oneWord" data-lang="de" placeholder="Ein Wort, das Ihr Erlebnis beschreibt">
+                        <input type="text" class="form-control" id="oneWord" name="oneWord" data-lang="en" placeholder="One word to describe your experience">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label data-lang="de">Möchten Sie zusätzliche Gedanken, Gefühle oder besondere Momente mit uns teilen?</label>
+                        <label data-lang="en">Would you like to share any additional thoughts, feelings, or moments that stood out to you?</label>
+                        <textarea class="form-control" id="additionalThoughts" name="additionalThoughts" data-lang="de" placeholder="Teilen Sie Ihre Gedanken mit uns..."></textarea>
+                        <textarea class="form-control" id="additionalThoughts" name="additionalThoughts" data-lang="en" placeholder="Share your thoughts here..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="checkbox-option">
+                            <input type="checkbox" id="consent" name="consent" value="Yes">
+                            <label for="consent" data-lang="de">Darf ich anonymisierte Zitate aus Ihren Antworten in zukünftigen Materialien oder für künstlerische Forschung verwenden?</label>
+                            <label for="consent" data-lang="en">May we use anonymised quotes from your responses in future materials or for artistic research?</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="checkbox-option">
+                            <input type="checkbox" id="followUp" name="followUp" value="Yes">
+                            <label for="followUp" data-lang="de">Möchten Sie über zukünftige Projekte informiert werden?</label>
+                            <label for="followUp" data-lang="en">Would you like to be informed about our future projects?</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group hidden" id="emailGroup">
+                        <label data-lang="de">E-Mail-Adresse:</label>
+                        <label data-lang="en">Email address:</label>
+                        <input type="email" class="form-control" id="email" name="email" data-lang="de" placeholder="Ihre E-Mail-Adresse">
+                        <input type="email" class="form-control" id="email" name="email" data-lang="en" placeholder="Your email address">
+                    </div>
+                </div>
+                
+                <div class="navigation-buttons">
+                    <button type="button" class="btn" id="prevBtn3" data-lang="de">← Zurück</button>
+                    <button type="button" class="btn" id="prevBtn3" data-lang="en">← Back</button>
+                    <button type="submit" class="btn" id="submitBtn" data-lang="de">Absenden</button>
+                    <button type="submit" class="btn" id="submitBtn" data-lang="en">Submit</button>
+                </div>
+            </div>
+        </form>
+        
+        <!-- Thank You Section (Hidden initially) -->
+        <div class="thank-you hidden" id="thankYouSection">
+            <h2 data-lang="de">Vielen Dank!</h2>
+            <h2 data-lang="en">Thank You!</h2>
+            <p data-lang="de">Ihr Feedback ist für uns von unschätzbarem Wert. Wir schätzen es sehr, dass Sie sich die Zeit genommen haben, Ihre Erfahrungen mit uns zu teilen.</p>
+            <p data-lang="en">Your feedback is invaluable to us. We appreciate you taking the time to share your experience.</p>
+            <button class="btn-share" id="shareBtn"><i class="fas fa-share-alt"></i> <span data-lang="de">Teilen</span><span data-lang="en">Share</span></button>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Detect user's language
+            const userLang = navigator.language || navigator.userLanguage;
+            const isGerman = userLang.startsWith('de');
+            document.body.classList.add(isGerman ? 'de' : 'en');
+            
+            // DOM elements
+            const form = document.getElementById('concertForm');
+            const section1 = document.getElementById('section1');
+            const section2 = document.getElementById('section2');
+            const section3 = document.getElementById('section3');
+            const thankYouSection = document.getElementById('thankYouSection');
+            const progressBar = document.getElementById('progressBar');
+            const shareBtn = document.getElementById('shareBtn');
+            const introText = document.getElementById('introText');
+            const followUpCheckbox = document.getElementById('followUp');
+            const emailGroup = document.getElementById('emailGroup');
+            
+            // Progress tracking
+            let currentSection = 1;
+            const totalSections = 4; // Change to 3 instead of 4
+            
+            // Update progress bar
+            function updateProgress() {
+                const progress = ((currentSection - 1) / (totalSections - 1)) * 100;
+                const progressBar = document.getElementById('progressBar');
+                if (progressBar) {
+                    progressBar.style.width = `${progress}%`;
+                }
+            }
+            
+            // Show section
+            function showSection(sectionNumber) {
+                hideAllSections();
+                
+                if (sectionNumber === 1) {
+                    section1.classList.remove('hidden');
+                } else if (sectionNumber === 2) {
+                    section2.classList.remove('hidden');
+                } else if (sectionNumber === 3) {
+                    section3.classList.remove('hidden');
+                } else if (sectionNumber === 4) {
+                    thankYouSection.classList.remove('hidden');
+                }
+                
+                currentSection = sectionNumber;
+                updateProgress(); // This will update the progress bar
+                
+                window.scrollTo(0, 0);
+            }
+            
+            // Hide all sections
+            function hideAllSections() {
+                section1.classList.add('hidden');
+                section2.classList.add('hidden');
+                section3.classList.add('hidden');
+                thankYouSection.classList.add('hidden');
+            }
+            
+            // Validate section
+            function validateSection(sectionNumber) {
+                if (sectionNumber === 1) {
+                    const musicianStatus = document.querySelector('input[name="musicianStatus"]:checked');
+                    const role = document.querySelector('input[name="role"]:checked');
+                    
+                    if (!musicianStatus) {
+                        const msg = isGerman ? 
+                            'Bitte wählen Sie aus, ob Sie Musiker(in) oder Nicht-Musiker(in) sind.' : 
+                            'Please select whether you are a musician or non-musician.';
+                        highlightError(document.querySelector('.radio-group'), msg);
+                        return false;
+                    }
+                    
+                    if (!role) {
+                        const msg = isGerman ? 
+                            'Bitte wählen Sie eine Rolle aus.' : 
+                            'Please select a role.';
+                        highlightError(document.querySelectorAll('.radio-group')[1], msg);
+                        return false;
+                    }
+                }
+                
+                return true;
+            }
+            
+            // Highlight error
+            function highlightError(element, message) {
+                element.classList.add('shake');
+                alert(message);
+                
+                // Remove shake effect after animation completes
+                setTimeout(() => {
+                    element.classList.remove('shake');
+                }, 500);
+            }
+            
+            // Event listeners for buttons
+            document.querySelectorAll('#nextBtn1').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (validateSection(1)) {
+                        showSection(2);
+                    }
+                });
+            });
+            
+            document.querySelectorAll('#nextBtn2').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    showSection(3);
+                });
+            });
+            
+            document.querySelectorAll('#prevBtn2').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    showSection(1);
+                });
+            });
+            
+            document.querySelectorAll('#prevBtn3').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    showSection(2);
+                });
+            });
+            
+            document.querySelectorAll('#submitBtn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    form.dispatchEvent(new Event('submit'));
+                });
+            });
+            
+            followUpCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    emailGroup.classList.remove('hidden');
+                } else {
+                    emailGroup.classList.add('hidden');
+                }
+            });
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Validate email if follow-up is checked
+                if (followUpCheckbox.checked) {
+                    const email = document.querySelector(`#email[data-lang="${isGerman ? 'de' : 'en'}"]`).value;
+                    if (!email || !email.includes('@')) {
+                        const msg = isGerman ? 
+                            'Bitte geben Sie eine gültige E-Mail-Adresse ein.' : 
+                            'Please enter a valid email address.';
+                        highlightError(document.getElementById('emailGroup'), msg);
+                        return;
+                    }
+                }
+                
+                // In a real application, you'd send the form data to a server here
+                console.log('Form submitted successfully!');
+                
+                // Show thank you section
+                showSection(4);
+            });
+            
+            shareBtn.addEventListener('click', function() {
+                if (navigator.share) {
+                    const shareData = {
+                        title: 'Unspoken Tales Feedback',
+                        text: isGerman ? 
+                            'Teilen Sie Ihre Gedanken über das Konzert' : 
+                            'Share your thoughts about the concert',
+                        url: window.location.href
+                    };
+                    navigator.share(shareData).catch(err => {
+                        console.log('Error sharing:', err);
+                    });
+                } else {
+                    // Fallback for browsers that don't support Web Share API
+                    const shareUrl = window.location.href;
+                    navigator.clipboard.writeText(shareUrl).then(() => {
+                        alert(isGerman ? 
+                            'Link wurde in die Zwischenablage kopiert.' : 
+                            'Link copied to clipboard.');
+                    }).catch(err => {
+                        console.error('Could not copy text: ', err);
+                    });
+                }
+            });
+            
+            // Initialize
+            updateProgress();
+            
+            // Set initial values for range inputs
+            document.querySelectorAll('.emotion-range').forEach(range => {
+                range.value = 0;
+            });
+        });
+    </script>
+</body>
+</html>
