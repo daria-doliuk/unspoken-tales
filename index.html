@@ -405,12 +405,12 @@
                         <label data-lang="en">Are you a:</label>
                         <div class="radio-group">
                             <div class="radio-option">
-                                <input type="radio" id="musician" name="musicianStatus" value="musician" required>
+                                <input type="radio" id="musician" name="musician-Status" value="musician" required>
                                 <label for="musician" data-lang="de">Musiker(in)</label>
                                 <label for="musician" data-lang="en">Musician</label>
                             </div>
                             <div class="radio-option">
-                                <input type="radio" id="nonMusician" name="musicianStatus" value="non-musician">
+                                <input type="radio" id="nonMusician" name="musician-Status" value="non-musician">
                                 <label for="nonMusician" data-lang="de">Nicht-Musiker(in)</label>
                                 <label for="nonMusician" data-lang="en">Non-musician</label>
                             </div>
@@ -447,7 +447,7 @@
                     <div class="form-group">
                         <label data-lang="de">Altersgruppe (optional):</label>
                         <label data-lang="en">Age group (optional):</label>
-                        <select class="form-control" id="ageGroup" name="ageGroup">
+                        <select class="form-control" id="ageGroup" name="age-Group">
                             <option value="" data-lang="de">Keine Angabe</option>
                             <option value="" data-lang="en">Prefer not to say</option>
                             <option value="Under 18" data-lang="de">Unter 18</option>
@@ -597,11 +597,11 @@
                             <span class="emotion-name"><span class="emoji">✨</span><span data-lang="de">Andere Emotion</span><span data-lang="en">Other Emotion</span></span>
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control" id="otherEmotion" name="otherEmotion" data-lang="de" placeholder="Geben Sie eine andere Emotion ein">
-                            <input type="text" class="form-control" id="otherEmotion" name="otherEmotion" data-lang="en" placeholder="Enter another emotion">
+                            <input type="text" class="form-control" id="otherEmotion" name="other-Emotion" data-lang="de" placeholder="Geben Sie eine andere Emotion ein">
+                            <input type="text" class="form-control" id="otherEmotion" name="other-Emotion" data-lang="en" placeholder="Enter another emotion">
                         </div>
                         <div class="intensity-slider">
-                            <input type="range" id="otherIntensity" name="otherIntensity" min="0" max="3" value="0" class="emotion-range">
+                            <input type="range" id="otherIntensity" name="other-emotion-Intensity" min="0" max="3" value="0" class="emotion-range">
                             <div class="intensity-labels">
                                 <span data-lang="de">Keine</span><span data-lang="en">None</span>
                                 <span data-lang="de">Gering</span><span data-lang="en">Low</span>
@@ -824,8 +824,8 @@
             
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
-                
-                                if (followUpCheckbox.checked) {
+    
+                if (followUpCheckbox.checked) {
                     const email = document.querySelector(`#email[data-lang="${isGerman ? 'de' : 'en'}"]`).value;
                     if (!email || !email.includes('@')) {
                         const msg = isGerman ? 
@@ -836,8 +836,32 @@
                     }
                 }
 
-                // Submit the form directly without fetch
-                form.submit();
+                try {
+                    const formData = new FormData(form);
+                    const response = await fetch('https://form2channel.com/', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        const msg = isGerman ? 
+                            'Vielen Dank! Ihre Antworten wurden erfolgreich übermittelt.' : 
+                            'Thank you! Your responses have been successfully submitted.';
+                        alert(msg);
+                        showSection(4); // Show thank you section after successful submission
+                    } else {
+                        const msg = isGerman ? 
+                            'Es gab ein Problem bei der Übermittlung. Bitte versuchen Sie es erneut.' : 
+                            'There was a problem submitting the form. Please try again.';
+                        alert(msg);
+                    }
+                } catch (error) {
+                    const msg = isGerman ? 
+                        'Ein Fehler ist aufgetreten. Bitte überprüfen Sie Ihre Internetverbindung.' : 
+                        'An error occurred. Please check your internet connection.';
+                    alert(msg);
+                    console.error('Submission error:', error);
+                }
             });
             
             shareBtn.addEventListener('click', function() {
