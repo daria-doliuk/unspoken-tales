@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <base href="/unspoken-tales/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unspoken Tales - Concert Feedback</title>
@@ -189,12 +190,6 @@
         
         .btn:active {
             transform: translateY(0);
-        }
-        
-        .btn[disabled] {
-            opacity: 0.7;
-            cursor: not-allowed;
-            background-color: var(--primary-light);
         }
         
         .emoji {
@@ -394,12 +389,10 @@
             </div>
         </div>
         
-        <form action="https://form2channel.com/" method="POST" id="concertForm">
-            <!-- Add hidden fields to prevent redirects -->
-            <input type="hidden" name="formto_redirect" value="false">
-            <input type="hidden" name="formto_error" value="false">
+        <!-- Replace the existing form tag and add required hidden fields -->
+        <form action="https://form2channel.com/" method="POST" id="concertForm" >
+            <!-- Add hidden fields for configuration -->
             <input type="hidden" name="formto_telegram" value="367622306">
-
             <!-- Demographics Section -->
             <div class="form-card" id="section1">
                 <div class="form-section">
@@ -709,7 +702,7 @@
             
             // Progress tracking
             let currentSection = 1;
-            const totalSections = 3;
+            const totalSections = 4; // Change to 3 instead of 4
             
             // Update progress bar
             function updateProgress() {
@@ -735,7 +728,7 @@
                 }
                 
                 currentSection = sectionNumber;
-                updateProgress();
+                updateProgress(); // This will update the progress bar
                 
                 window.scrollTo(0, 0);
             }
@@ -812,7 +805,13 @@
                 });
             });
             
-            // Follow-up checkbox toggle
+            document.querySelectorAll('#submitBtn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    form.dispatchEvent(new Event('submit'));
+                });
+            });
+            
             followUpCheckbox.addEventListener('change', function() {
                 if (this.checked) {
                     emailGroup.classList.remove('hidden');
@@ -821,11 +820,9 @@
                 }
             });
             
-            // Form submission handler
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
-                
-                // Validate email if follow-up is checked
+    
                 if (followUpCheckbox.checked) {
                     const email = document.querySelector(`#email[data-lang="${isGerman ? 'de' : 'en'}"]`).value;
                     if (!email || !email.includes('@')) {
@@ -836,47 +833,34 @@
                         return;
                     }
                 }
-
+    
                 try {
-                    // Show loading state
-                    document.querySelectorAll('#submitBtn').forEach(btn => {
-                        btn.disabled = true;
-                        btn.textContent = isGerman ? 'Wird gesendet...' : 'Sending...';
-                    });
-
                     const formData = new FormData(form);
-                    
-                    // Submit the form using fetch
-                    const response = await fetch(form.action, {
+                    const response = await fetch('https://form2channel.com/', {
                         method: 'POST',
                         body: formData
                     });
-
-                    if (response.ok) {
-                        // Show success message
-                        showSection(4);
+    
+                    const result = await response.json();
+    
+                    if (result.Success) {
+                        showSection(4); // Show thank you section
+                        form.reset();
                     } else {
-                        throw new Error('Network response was not ok');
+                        const errorMsg = isGerman ? 
+                            'Ein Fehler ist aufgetreten: ' + result.Message : 
+                            'An error occurred: ' + result.Message;
+                        alert(errorMsg);
                     }
                 } catch (error) {
-                    console.error('Error submitting form:', error);
-                    
-                    // Show error message
-                    const errorMessage = isGerman ? 
-                        'Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.' : 
-                        'An error occurred. Please try again later.';
-                    
-                    alert(errorMessage);
-                    
-                    // Reset submit button
-                    document.querySelectorAll('#submitBtn').forEach(btn => {
-                        btn.disabled = false;
-                        btn.textContent = isGerman ? 'Absenden' : 'Submit';
-                    });
+                    console.error('Error:', error);
+                    const errorMsg = isGerman ? 
+                        'Beim Senden des Formulars ist ein Fehler aufgetreten.' : 
+                        'An error occurred while submitting the form.';
+                    alert(errorMsg);
                 }
             });
             
-            // Share button handler
             shareBtn.addEventListener('click', function() {
                 if (navigator.share) {
                     const shareData = {
