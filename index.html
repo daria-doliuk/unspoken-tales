@@ -389,11 +389,11 @@
         </div>
         
         <!-- Replace the existing form tag and add required hidden fields -->
-        <form action="https://form2channel.com/" method="POST" id="concertForm" >
+        <form action="https://form2channel.com/" method="POST" id="concertForm">
             <!-- Add hidden fields for configuration -->
             <input type="hidden" name="formto_telegram" value="367622306">
-            <input name="formto_redirect" type="hidden" value="#success">
-            <input name="formto_error" type="hidden" value="#fail">
+            <input type="hidden" name="formto_redirect" value="https://daria-doliuk.github.io/unspoken-tales/#success">
+            <input type="hidden" name="formto_error" value="https://daria-doliuk.github.io/unspoken-tales/#fail">
             <!-- Demographics Section -->
             <div class="form-card" id="section1">
                 <div class="form-section">
@@ -824,7 +824,7 @@
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
-                                if (followUpCheckbox.checked) {
+                if (followUpCheckbox.checked) {
                     const email = document.querySelector(`#email[data-lang="${isGerman ? 'de' : 'en'}"]`).value;
                     if (!email || !email.includes('@')) {
                         const msg = isGerman ? 
@@ -835,8 +835,22 @@
                     }
                 }
 
-                // Submit the form directly without fetch
-                form.submit();
+                try {
+                    const formData = new FormData(form);
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        window.location.href = 'https://daria-doliuk.github.io/unspoken-tales/#success';
+                    } else {
+                        window.location.href = 'https://daria-doliuk.github.io/unspoken-tales/#fail';
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    window.location.href = 'https://daria-doliuk.github.io/unspoken-tales/#fail';
+                }
             });
             
             shareBtn.addEventListener('click', function() {
