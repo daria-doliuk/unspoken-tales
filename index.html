@@ -823,9 +823,13 @@
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
-                // Disable all submit buttons to prevent multiple submissions
+                // Disable all submit buttons immediately
                 const submitButtons = document.querySelectorAll('#submitBtn');
-                submitButtons.forEach(btn => btn.disabled = true);
+                submitButtons.forEach(btn => {
+                    btn.disabled = true;
+                    // Optional: Change button text to show loading state
+                    btn.innerHTML = isGerman ? 'Wird gesendet...' : 'Submitting...';
+                });
                 
                 // Validate email if follow-up is checked
                 if (followUpCheckbox.checked) {
@@ -836,20 +840,22 @@
                             'Please enter a valid email address.';
                         highlightError(document.getElementById('emailGroup'), msg);
                         // Re-enable submit buttons if validation fails
-                        submitButtons.forEach(btn => btn.disabled = false);
+                        submitButtons.forEach(btn => {
+                            btn.disabled = false;
+                            btn.innerHTML = isGerman ? 'Absenden' : 'Submit';
+                        });
                         return;
                     }
                 }
 
-                // Collect form data and transform to required format
+                // Prepare form data
                 const formData = new FormData(form);
-                const jsonData = [];
-                
-                // Add telegram channel ID
-                jsonData.push({
-                    "key": "formto_telegram",
-                    "value": "367622306"
-                });
+                const jsonData = [
+                    {
+                        "key": "formto_telegram",
+                        "value": "367622306"
+                    }
+                ];
 
                 // Convert FormData to required JSON format
                 for (let [key, value] of formData.entries()) {
@@ -877,9 +883,14 @@
                         form.reset();
                     } else {
                         const errorMsg = isGerman ? 
-                            'Fehler: ' + result.Message : 
-                            'Error: ' + result.Message;
+                            'Fehler: ' + (result.Message || 'Unbekannter Fehler') : 
+                            'Error: ' + (result.Message || 'Unknown error');
                         alert(errorMsg);
+                        // Re-enable submit buttons on error
+                        submitButtons.forEach(btn => {
+                            btn.disabled = false;
+                            btn.innerHTML = isGerman ? 'Absenden' : 'Submit';
+                        });
                     }
                 } catch (error) {
                     console.error('Error:', error);
@@ -887,9 +898,11 @@
                         'Beim Senden des Formulars ist ein Fehler aufgetreten.' : 
                         'An error occurred while submitting the form.';
                     alert(errorMsg);
-                } finally {
-                    // Re-enable submit buttons after response or error
-                    submitButtons.forEach(btn => btn.disabled = false);
+                    // Re-enable submit buttons on error
+                    submitButtons.forEach(btn => {
+                        btn.disabled = false;
+                        btn.innerHTML = isGerman ? 'Absenden' : 'Submit';
+                    });
                 }
             });
             
